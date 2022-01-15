@@ -9,6 +9,11 @@
 // modern version with promises
 const fs = require('fs/promises');
 
+const yargs = require('yargs');
+const { hideBin } = require('yargs/helpers');
+
+const { program } = require('commander');
+
 // vol. 2
 // const fs = require('fs').promises;
 
@@ -72,9 +77,9 @@ fileOperation('files/file.txt', 'add', '\nhi');
 
 // productsOperations is not a file, it's an object, it has the getAll method to read the content from the file
 const productsOperations = require('./products');
-console.log(productsOperations); // { getAll: [AsyncFunction: getAll] }
+// console.log(productsOperations); // { getAll: [AsyncFunction: getAll] }
 
-console.log(productsOperations.getAll());
+// console.log(productsOperations.getAll());
 
 // 1. get all products
 // 2. get a specific product by id
@@ -96,14 +101,28 @@ const invokeAction = async ({ action, name, price, id }) => {
       const newProduct = await productsOperations.add(name, price);
       console.log(newProduct);
       break;
+    case 'updateById':
+      const updatedProduct = await productsOperations.updateById(
+        id,
+        name,
+        price,
+      );
+      console.log(updatedProduct);
+      break;
+    case 'removeById':
+      const removedProduct = await productsOperations.removeById(id);
+      console.log(removedProduct);
+      break;
     default:
       console.log('Unknown command');
       break;
   }
 };
 
+// GET ALL-----------------
 // invokeAction({ action: 'getAll' });
 
+// GET BY ID---------------
 // invokeAction({ action: 'getById', id: '48bd1cd8-72ca-42cc-8457-156bb8c30873' });
 
 // wrong id, returns null, not undefined by default, correct version
@@ -112,4 +131,47 @@ const invokeAction = async ({ action, name, price, id }) => {
 //   id: '48bd1cd8-72ca-42cc-8457-156bb8c3083',
 // });
 
-invokeAction({ action: 'add', name: 'Sony XPeria 10 III', price: 33333 });
+// ADD----------------------
+// invokeAction({ action: 'add', name: 'Sony XPeria 10 III', price: 33333 });
+
+// UPDATE-------------------
+// invokeAction({
+//   action: 'updateById',
+//   id: 'AQPLyXQT3AN9F9BDm8ecs',
+//   name: 'Sony XPeria 10 III',
+//   price: 22222,
+// });
+
+// DELETE BY ID
+// invokeAction({
+//   action: 'removeById',
+//   id: '2ilbJgkgPTiniyk1UxTFD',
+// });
+
+// console.log(process.argv);
+
+// MANUAL----------------
+// const arr = hideBin(process.argv);
+// console.log(arr); // command: node app --action *name of action*, e.g. getAll
+// const { argv } = yargs(arr);
+// console.log(argv); // command: node app --action *name of action*, e.g. getAll
+
+// // command: node app --action add --name iPhone --price 33000
+// // =>
+// // { _: [], action: 'add', name: 'iPhone', price: 33000, '$0': 'app' }
+
+// invokeAction(argv);
+
+// VIA PACKAGE------------
+
+program
+  .option('-a, --action <type>', 'products action')
+  .option('--id <type>', 'product id')
+  .option('-n, --name <type>', 'product name')
+  .option('-p, --price <type>', 'product price');
+
+program.parse(process.argv);
+
+const options = program.opts();
+console.log(options);
+invokeAction(options);
