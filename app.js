@@ -175,3 +175,12 @@ program.parse(process.argv);
 const options = program.opts();
 console.log(options);
 invokeAction(options);
+
+// node app -a getById --id 61c0169c-e693-4a20-af3e-2e55fdc34f79
+// =>
+// { action: 'getById', id: '61c0169c-e693-4a20-af3e-2e55fdc34f79' }
+// {
+//   id: '61c0169c-e693-4a20-af3e-2e55fdc34f79',
+//   name: 'Crisps',
+//   price: 4
+// }
